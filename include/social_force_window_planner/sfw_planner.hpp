@@ -286,6 +286,13 @@ public:
     return footprint_spec_;
   }
 
+  /**
+   * @brief  Set the speed limit 
+    * @param speed_limit The speed limit
+    * @param percentage The percentage of the speed limit
+    */
+  void setSpeedLimit(const double &speed_limit, const bool &percentage);
+
   visualization_msgs::msg::MarkerArray &getMarkers();
 
 private:

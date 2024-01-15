@@ -45,10 +45,11 @@ Iter min_by(Iter begin, Iter end, Getter getCompareVal) {
 }
 
 void SFWPlannerNode::configure(
-    const rclcpp_lifecycle::LifecycleNode::SharedPtr &parent,
-    const std::string name, const std::shared_ptr<tf2_ros::Buffer> &tf,
-    const std::shared_ptr<nav2_costmap_2d::Costmap2DROS> &costmap_ros) {
+    const rclcpp_lifecycle::LifecycleNode::WeakPtr &parent_node,
+    std::string name, const std::shared_ptr<tf2_ros::Buffer> tf,
+    const std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros) {
 
+  auto parent = parent_node.lock();
   logger_ = parent->get_logger();
   node_ = parent;
   name_ = name;
@@ -217,9 +218,15 @@ bool SFWPlannerNode::transformPoint(
   return false;
 }
 
+void SFWPlannerNode::setSpeedLimit(const double &speed_limit,
+                                   const bool &percentage) {
+  sfw_planner_->setSpeedLimit(speed_limit, percentage);
+}
+
 geometry_msgs::msg::TwistStamped SFWPlannerNode::computeVelocityCommands(
     const geometry_msgs::msg::PoseStamped &pose,
-    const geometry_msgs::msg::Twist &speed) {
+    const geometry_msgs::msg::Twist &speed,
+    nav2_core::GoalChecker * /*goal_checker*/) {
 
   // RCLCPP_INFO(logger_, "ComputeVelocityCommands called!!!!");
   geometry_msgs::msg::TwistStamped velStamp;

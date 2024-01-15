@@ -161,7 +161,7 @@ public:
    * @param parent pointer to a ros node handle to publish to topics
    * @param tf Pointer to tf2 buffer
    **/
-  SFMSensorInterface(const rclcpp_lifecycle::LifecycleNode::SharedPtr &parent,
+  SFMSensorInterface(const rclcpp_lifecycle::LifecycleNode::WeakPtr &parent,
                      const std::shared_ptr<tf2_ros::Buffer> &tf,
                      const std::string name);
 

@@ -16,15 +16,16 @@ using std::placeholders::_1;
 namespace social_force_window_planner {
 
 SFMSensorInterface::SFMSensorInterface(
-    const rclcpp_lifecycle::LifecycleNode::SharedPtr &parent,
+    const rclcpp_lifecycle::LifecycleNode::WeakPtr &parent_node,
     const std::shared_ptr<tf2_ros::Buffer> &tf, const std::string name)
-    : node_(parent), tf_buffer_(tf), name_(name) {
-
+    : tf_buffer_(tf), name_(name) {
+  node_ = parent_node.lock();
+  
   RCLCPP_INFO(node_->get_logger(),
               "CONFIGURING SENSOR INTERFACE of CONTROLLER: %s ", name_.c_str());
   laser_received_ = false;
   running_ = false;
-  last_laser_ = parent->get_clock()->now();
+  last_laser_ = node_->get_clock()->now();
 
   iface_params_.get(node_.get(), name);
 
@@ -319,7 +320,7 @@ void SFMSensorInterface::publish_obstacle_points(
   m.color.b = 0.0;
   m.color.a = 1.0;
   m.id = 1000;
-  m.lifetime = rclcpp::Duration(0.3);
+  m.lifetime = rclcpp::Duration(std::chrono::milliseconds(300));
   // printf("Published Obstacles: ");
   for (utils::Vector2d p : points) {
     geometry_msgs::msg::Point pt;

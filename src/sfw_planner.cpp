@@ -100,7 +100,7 @@ void SFWPlanner::initializeMarkers() {
       markers_.markers[counter].id = counter;
       markers_.markers[counter].type = 4;
       markers_.markers[counter].action = 0; // 0 - add/modify an object
-      markers_.markers[counter].lifetime = rclcpp::Duration(0.3);
+      markers_.markers[counter].lifetime = rclcpp::Duration(std::chrono::milliseconds(300));
       markers_.markers[counter].scale.x = 0.01;
       markers_.markers[counter].color.a = 1.0;
       markers_.markers[counter].pose.orientation.w = 1.0;
@@ -890,6 +890,43 @@ bool SFWPlanner::updatePlan(
 
   return true;
 }
+
+void SFWPlanner::setSpeedLimit(
+  const double & speed_limit, const bool & percentage)
+{
+  // TODO
+  // ControllerParameters parameters(*params_.load());
+
+  // if (speed_limit == nav2_costmap_2d::NO_SPEED_LIMIT) {
+  //   // Restore default value
+  //   params_.max_speed_xy_ = params_.base_max_speed_xy_;
+  //   params_.max_vel_x_ = params_.base_max_vel_x_;
+  //   params_.max_vel_y_ = params_.base_max_vel_y_;
+  //   params_.max_vel_theta_ = params_.base_max_vel_theta_;
+  // } else {
+  //   if (percentage) {
+  //     // Speed limit is expressed in % from maximum speed of robot
+  //     params_.max_speed_xy_ = params_.base_max_speed_xy_ * speed_limit / 100.0;
+  //     params_.max_vel_x_ = params_.base_max_vel_x_ * speed_limit / 100.0;
+  //     params_.max_vel_y_ = params_.base_max_vel_y_ * speed_limit / 100.0;
+  //     params_.max_vel_theta_ = params_.base_max_vel_theta_ * speed_limit / 100.0;
+  //   } else {
+  //     // Speed limit is expressed in absolute value
+  //     if (speed_limit < params_.base_max_speed_xy_) {
+  //       params_.max_speed_xy_ = speed_limit;
+  //       // Handling components and angular velocity changes:
+  //       // Max velocities are being changed in the same proportion
+  //       // as absolute linear speed changed in order to preserve
+  //       // robot moving trajectories to be the same after speed change.
+  //       const double ratio = speed_limit / params_.base_max_speed_xy_;
+  //       params_.max_vel_x_ = params_.base_max_vel_x_ * ratio;
+  //       params_.max_vel_y_ = params_.base_max_vel_y_ * ratio;
+  //       params_.max_vel_theta_ = params_.base_max_vel_theta_ * ratio;
+  //     }
+  //   }
+   RCLCPP_INFO(node_->get_logger(), "SFWPlanner. Speed limit set to %.2f m/s", speed_limit);
+   RCLCPP_INFO(node_->get_logger(), "SFWPlanner. percentage: %d", percentage);
+  }
 
 bool SFWPlanner::isGoalReached() {
   if (goal_reached_) {
