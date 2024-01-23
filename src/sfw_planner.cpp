@@ -266,9 +266,11 @@ bool SFWPlanner::findBestAction(
     wp_index_++;
     wpx = global_plan_[wp_index_].pose.position.x;
     wpy = global_plan_[wp_index_].pose.position.y;
-    // dist_swp = sqrt((rx - wpx) * (rx - wpx) + (ry - wpy) * (ry - wpy));
     dist_swp_sq = (rx - wpx) * (rx - wpx) + (ry - wpy) * (ry - wpy);
   }
+
+  local_goal_ = global_plan_[wp_index_];
+  local_goal_.header.stamp = node_->get_clock()->now();
 
   // Transform way-point into local robot frame and get desired x,y,theta
   double dx = (wpx - rx) * cos(rt) + (wpy - ry) * sin(rt);
@@ -291,7 +293,7 @@ bool SFWPlanner::findBestAction(
     if (dt < 0.0)
       vt *= -1;
 
-    RCLCPP_INFO(node_->get_logger(),
+    RCLCPP_DEBUG(node_->get_logger(),
                 "findBestAction. Approaching local goal x:%.2f, y:%.2f at "
                 "lv:%.2f, av: %.2f",
                 dx, dy, vx, vt);
@@ -325,7 +327,7 @@ bool SFWPlanner::findBestAction(
       markers_.markers[0].color.a = 1.0;
       return true;
     } else {
-      RCLCPP_INFO(
+      RCLCPP_DEBUG(
           node_->get_logger(),
           "findBestAction. Approaching local goal at lv: %.2f, av: %.2f "
           "NOT VALID!",
@@ -447,7 +449,7 @@ bool SFWPlanner::findBestAction(
     cmd_vel.angular.y = 0.0;
     cmd_vel.angular.z = vt;
 
-    RCLCPP_INFO(node_->get_logger(),
+    RCLCPP_DEBUG(node_->get_logger(),
                 "BEST TRAJ FOUND -- lvel: %.2f, avel: %.2f, cost: %.3f\n", vx,
                 vt, best_traj.cost_);
 
@@ -665,12 +667,12 @@ double SFWPlanner::scoreTrajectory(double x, double y, double theta, double vx,
                 (params_.angle_weight_ * ang_diff) +
                 (params_.costmap_weight_ * costmap_cost) +
                 (params_.social_weight_ * social_work);
-  // RCLCPP_INFO(node_->get_logger(),
-  //             "-Scoring lv: %.2f, av: %.2f, d: %.3f, sw: %.3f, hdiff: %.3f, "
-  //             "vdiff: %.3f, ccost: %.3f "
-  //             "FCost: %.4f",
-  //             vx_samp, vtheta_samp, std::sqrt(d), social_work, ang_diff,
-  //             vel_diff, costmap_cost, cost);
+  RCLCPP_DEBUG(node_->get_logger(),
+              "-Scoring lv: %.2f, av: %.2f, d: %.3f, sw: %.3f, hdiff: %.3f, "
+              "vdiff: %.3f, ccost: %.3f "
+              "FCost: %.4f",
+              vx_samp, vtheta_samp, std::sqrt(d), social_work, ang_diff,
+              vel_diff, costmap_cost, cost);
   traj.cost_ = cost;
   return traj.cost_;
 }

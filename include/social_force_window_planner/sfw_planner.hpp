@@ -273,6 +273,14 @@ public:
   bool isGoalReached();
   void resetGoal();
 
+  /**
+   * @brief  Get local goal of the robot
+   * @return The local goal of the robot
+   */
+  geometry_msgs::msg::PoseStamped getLocalGoal() const {
+    return local_goal_;
+  }
+
   /** @brief Set the footprint specification of the robot. */
   void setFootprint(std::vector<geometry_msgs::msg::Point> footprint) {
     footprint_spec_ = footprint;
@@ -373,6 +381,7 @@ private:
   std::vector<geometry_msgs::msg::PoseStamped>
       global_plan_; ///< @brief The global path for
                     /// the robot to follow
+  geometry_msgs::msg::PoseStamped local_goal_;
 
   std::vector<double> linvels_;
   std::vector<double> angvels_;

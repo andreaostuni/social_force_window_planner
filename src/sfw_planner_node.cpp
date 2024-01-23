@@ -72,6 +72,9 @@ void SFWPlannerNode::configure(
   local_path_pub_ =
       parent->create_publisher<nav_msgs::msg::Path>("robot_local_plan", 1);
 
+  local_goal_pub_ =
+      parent->create_publisher<geometry_msgs::msg::PoseStamped>("local_goal", 1);
+
   traj_pub_ = parent->create_publisher<visualization_msgs::msg::MarkerArray>(
       "robot_local_trajectories", 1);
 
@@ -86,6 +89,7 @@ void SFWPlannerNode::cleanup() {
               "social_force_window_planner::SFWPlannerNode",
               name_.c_str());
   global_path_pub_.reset();
+  local_goal_pub_.reset();
   local_path_pub_.reset();
   traj_pub_.reset();
 }
@@ -96,6 +100,7 @@ void SFWPlannerNode::activate() {
               "social_force_window_planner::SFWPlannerNode",
               name_.c_str());
   global_path_pub_->on_activate();
+  local_goal_pub_->on_activate();
   local_path_pub_->on_activate();
   traj_pub_->on_activate();
 }
@@ -106,6 +111,7 @@ void SFWPlannerNode::deactivate() {
               "social_force_window_planner::SFWPlannerNode",
               name_.c_str());
   global_path_pub_->on_deactivate();
+  local_goal_pub_->on_deactivate();
   local_path_pub_->on_deactivate();
   traj_pub_->on_deactivate();
   sensor_iface_->stop();
@@ -279,8 +285,8 @@ geometry_msgs::msg::TwistStamped SFWPlannerNode::computeVelocityCommands(
 
   // geometry_msgs::msg::PoseStamped goal_point = transformed_plan.poses.back();
 
-  // RCLCPP_INFO(logger_, "Updating plan in local planner. Frame: %s",
-  //            transformed_plan.header.frame_id.c_str());
+  RCLCPP_INFO(logger_, "Updating plan in local planner. Frame: %s",
+             transformed_plan.header.frame_id.c_str());
   sfw_planner_->updatePlan(transformed_plan.poses);
 
   geometry_msgs::msg::Twist drive_cmds;
@@ -313,6 +319,7 @@ geometry_msgs::msg::TwistStamped SFWPlannerNode::computeVelocityCommands(
   // publish information to the visualizer
   // publishPlan(transformed_plan, g_plan_pub_);
   global_path_pub_->publish(transformed_plan);
+  local_goal_pub_->publish(sfw_planner_->getLocalGoal());
   traj_pub_->publish(markers);
 
   velStamp.header.stamp = node_->get_clock()->now();
