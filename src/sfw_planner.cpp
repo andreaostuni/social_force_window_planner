@@ -668,6 +668,11 @@ double SFWPlanner::scoreTrajectory(double x, double y, double theta, double vx,
                 (params_.costmap_weight_ * costmap_cost) +
                 (params_.social_weight_ * social_work);
   RCLCPP_DEBUG(node_->get_logger(),
+              "Scoring weights: v: %.2f, d: %.2f, a: %.2f, c: %.2f, s: %.2f",
+              params_.vel_weight_, params_.distance_weight_,
+              params_.angle_weight_, params_.costmap_weight_,
+              params_.social_weight_);
+  RCLCPP_DEBUG(node_->get_logger(),
               "-Scoring lv: %.2f, av: %.2f, d: %.3f, sw: %.3f, hdiff: %.3f, "
               "vdiff: %.3f, ccost: %.3f "
               "FCost: %.4f",

@@ -285,7 +285,7 @@ geometry_msgs::msg::TwistStamped SFWPlannerNode::computeVelocityCommands(
 
   // geometry_msgs::msg::PoseStamped goal_point = transformed_plan.poses.back();
 
-  RCLCPP_INFO(logger_, "Updating plan in local planner. Frame: %s",
+  RCLCPP_DEBUG(logger_, "Updating plan in local planner. Frame: %s",
              transformed_plan.header.frame_id.c_str());
   sfw_planner_->updatePlan(transformed_plan.poses);
 
